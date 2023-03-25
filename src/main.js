@@ -1,14 +1,11 @@
 import express from "express";
-import routerProduct from "./routes/product.js";
+import routerUser from "./routers/user.js"
+import dotenv from "dotenv"
 
-import dotenv from "dotenv";
-dotenv.config();
 const app = express();
-
-app.use(express.json());
-
-app.use("/api", routerProduct);
-
+app.use(express.json())
+dotenv.config()
+app.use("/api", routerUser)
 app.listen(process.env.PORT, () => {
-  console.log(`Server is running on ${process.env.PORT}`);
-});
+    console.log("SERVER RUN HERE " + `${process.env.PORT}`);
+})

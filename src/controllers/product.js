@@ -1,77 +1,119 @@
 import axios from "axios";
 import dotenv from "dotenv";
-dotenv.config();
-// const API_URI = "http://localhost:3001/products/";
-export const getAll = async (req, res) => {
-  try {
-    const { data: products } = await axios.get(
-      `${API_URI}`
-    );
-    if (products.length === 0) {
-      res.send({
-        messenger: "Danh sách sản phẩm trống",
-      });
-    }
-    return res.status(200).json(products);
-  } catch (err) {
-    res.status(500).json({ messenger: err });
-  }
-};
+import Joi from "joi";
+dotenv.config()
+const API_URL = "http://localhost:3000/users/";
+export const GetALL = async (req, res) => {
 
-export const getDetail = async (req, res) => {
-  try {
-    const { data: product } = await axios.get(`${API_URI}${req.params.id}`);
-    if (!product) {
-      res.send({
-        messenger: "Không tìm thấy sản phẩm",
-      });
+    try {
+        const { data: users } = await axios.get(
+            `${API_URL}`
+        );
+        if (users.length === 0) {
+            res.send({
+                messenger: "Danh sách trống"
+            })
+        }
+        return res.status(200).json(users);
     }
-    return res.status(200).json(product);
-  } catch (err) {
-    res.status(500).json({ messenger: err });
-  }
-};
-
-export const create = async (req, res) => {
-  try {
-    const { data: product } = await axios.post(`${API_URI}`, req.body);
-    if (!product) {
-      res.send({
-        messenger: "Thêm sản phẩm không thành công",
-      });
+    catch (err) {
+        res.status(500).json({ messenger: err })
     }
-    return res.json(product);
-  } catch (err) {
-    res.status(500).json({ messenger: err });
-  }
-};
+}
+export const GetID = async (req, res) => {
+    try {
+        const { data: users } = await axios.get(
+            `${API_URL}${req.params.id}`
+        );
 
-export const remove = async (req, res) => {
-  try {
-    await axios.delete(`${API_URI}${req.params.id}`);
-    return res.status(200).json({
-      message: "Sản phẩm đã được xóa thành công",
+
+        return res.status(200).json(users);
+
+    }
+    catch (err) {
+        if (err.response.status === 404) {
+            return res.status(404).json({ messenger: "Không tìm thấy " });
+        }
+        res.status(500).json({ messenger: err })
+    }
+}
+export const PostUser = async (req, res) => {
+    const schema = Joi.object({
+        name: Joi.string().required(),
+        username: Joi.string().required(),
+        email: Joi.string().required()
     });
-  } catch (error) {
-    return res.status(500).json({
-      message: error,
-    });
-  }
-};
-
-export const update = async (req, res) => {
-  try {
-    const { data: product } = await axios.put(
-      `${API_URI}${req.params.id}`,
-      req.body
-    );
-    if (!product) {
-      res.send({
-        messenger: "Update sản phẩm không thành công",
-      });
+    const { error } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ error: "Nhập thiếu" });
     }
-    return res.status(200).json(product);
-  } catch (err) {
-    res.status(500).json({ messenger: err });
-  }
-};
+    try {
+
+
+        const { data: users } = await axios.post(
+            `${API_URL}`, req.body
+        )
+
+        return res.status(200).json(users);
+    }
+    catch (err) {
+        res.status(500).json({ messenger: err })
+    }
+}
+export const REMOVE = async (req, res) => {
+
+
+    try {
+        const { data: users } = await axios.delete(
+            `${API_URL}${req.params.id}`
+        );
+
+
+
+        return res.status(200).json({
+            messenger: "Xóa Ok"
+        }
+
+        );
+
+    }
+    catch (err) {
+        if (err.response.status === 404) {
+            return res.status(404).json({ messenger: "Không tìm thấy " });
+        }
+        res.status(500).json({ messenger: err })
+    }
+}
+export const PutUser = async (req, res) => {
+
+    try {
+        const { data: users } = await axios.put(
+            `${API_URL}${req.params.id}`, req.body
+        )
+
+        return res.status(200).json(users);
+    }
+    catch (err) {
+        if (err.response.status === 404) {
+            return res.status(404).json({ messenger: "Không tìm thấy " });
+        }
+        res.status(500).json({ messenger: err })
+    }
+}
+export const PatchUser = async (req, res) => {
+
+    try {
+        const { data: users } = await axios.patch(
+            `${API_URL}${req.params.id}`, req.body
+        )
+
+        return res.status(200).json(users);
+    }
+    catch (err) {
+        if (err.response.status === 404) {
+            return res.status(404).json({ messenger: "Không tìm thấy " });
+        }
+        res.status(500).json({ messenger: err })
+    }
+}
+
